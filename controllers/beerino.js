@@ -26,6 +26,23 @@ module.exports = function (app) {
         });
     });
 
+    app.get('/beerino', function(req, res) {
+        var connection = app.repository.connectionFactory();
+        var beerinoRepository = new app.repository.beerinoRepository(connection);
+        var pagingConfig = {
+            page: req.params.page,
+            limit: req.params.limit
+        };
+
+        beerinoRepository.list(pagingConfig, function(error, result) {
+            if (error) {
+                res.status(500).send(error);
+            } else {
+                res.status(201).json(result);
+            }
+        });
+    })
+
     // app.post("/beerino/register/:userId/:beerinoUserId", function (oRequest, oResponse) {
     //     var oConnection = app.repository.connectionFactory();
     //     var beerinoRepository = new app.repository.beerinoRepository(oConnection);
