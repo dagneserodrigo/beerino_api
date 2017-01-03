@@ -1,2 +1,2 @@
 # beerino_api
-Brewing Temperature Control
+Beerino node api

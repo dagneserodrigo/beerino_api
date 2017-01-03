@@ -1,0 +1,40 @@
+{
+  "name": "beerino.api",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node index.js"
+  },
+  "description": "Beerino.API",
+  "author": {
+    "name": "Mateus Demboski",
+    "email": "mateusdemboski@gmail.com",
+    "url": "https://github.com/mateusdemboski"
+  },
+  "contributors": [
+    {
+      "name": "Rodrigo Dagnese",
+      "email": "dagnese.rodrigo@gmail.com",
+      "url": "https://github.com/dagneserodrigo"
+    },
+    {
+      "name": "Marcos Koch",
+      "email": "marcos_koch@hotmail.com",
+      "url": "https://github.com/marcoskoch"
+    },
+    {
+      "name": "Daniel Bertolozi",
+      "email": "daniel@gmail.com",
+      "url": "https://github.com/danielbertolozi"
+    }
+  ],
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "consign": "^0.1.2",
+    "eslint": "^3.12.2",
+    "express": "^4.14.0",
+    "express-jwt": "^5.1.0",
+    "express-validator": "^2.20.8",
+    "mysql": "^2.12.0"
+  }
+}
