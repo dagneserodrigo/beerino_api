@@ -41,7 +41,20 @@ module.exports = function (app) {
                 res.status(201).json(result);
             }
         });
-    })
+    });
+
+    app.delete('/beerino/:beerinoId', function(req, res) {
+        var connection = app.repository.connectionFactory();
+        var beerinoRepository = new app.repository.beerinoRepository(connection);
+        
+        beerinoRepository.delete(req.params.beerinoId, function(error, result) {
+            if (error) {
+                res.status(500).send(error);
+            } else {
+                res.status(201).json(result);
+            }
+        });
+    });
 
     // app.post("/beerino/register/:userId/:beerinoUserId", function (oRequest, oResponse) {
     //     var oConnection = app.repository.connectionFactory();
