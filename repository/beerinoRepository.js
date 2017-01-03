@@ -14,7 +14,7 @@ beerinoRepository.prototype.list = function(pagingConfig, callback) {
     this._connection.query('SELECT beerinoId, name, description, userId FROM beerino LIMIT ?,?', [pagingConfig.page, pagingConfig.limit], callback);
 }
 
-beerinoRepository.prototype.list = function(beerinoId, callback) {
+beerinoRepository.prototype.delete = function(beerinoId, callback) {
     this._connection.query('DELETE FROM beerino WHERE beerinoId = ?', beerinoId, callback);
 }
 
