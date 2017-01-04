@@ -26,7 +26,7 @@ module.exports = function (app) {
         });
     });
 
-    app.get('/beerino/:page/:limit', function(req, res) {
+    app.get('/beerinos/:page/:limit', function(req, res) {
         var connection = app.repository.connectionFactory();
         var beerinoRepository = new app.repository.beerinoRepository(connection);
         var pagingConfig = {
