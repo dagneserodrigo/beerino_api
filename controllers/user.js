@@ -42,4 +42,17 @@ module.exports = function (app) {
             }
         });
     });
+
+    app.delete("/user/:userId", function (req, res) {
+        var connection = app.repository.connectionFactory();
+        var userRepository = new app.repository.userRepository(connection);
+
+        userRepository.delete(req.params.userId, function(error, result) {
+            if (error) {
+                res.status(500).send(error);
+            } else {
+                res.status(201).json(result);
+            }
+        });
+    });
 };
