@@ -12,5 +12,17 @@ module.exports = function (app) {
         });
     });
 
-    
+    app.post("/user", function (req, res) {
+        var connection = app.repository.connectionFactory();
+        var userRepository = new app.repository.userRepository(connection);
+        var user = req.body;
+
+        userRepository.save(user, function(error, result) {
+            if (error) {
+                res.status(500).send(error);
+            } else {
+                res.status(201).json(result);
+            }
+        });
+    });
 };
