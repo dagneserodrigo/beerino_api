@@ -11,4 +11,18 @@ module.exports = function(app) {
             }
         });
     });
+
+    app.post('beer', function(req, res) {
+        var connection = app.repository.connectionFactory();
+        var beerRepository = new app.repository.beerRepository(connection);
+        var beer = req.body;
+
+        beerRepository.get(beer, function(error, result) {
+            if (error) {
+                res.status(500).send(error);
+            } else {
+                res.status(201).send(result);
+            }
+        });
+    });
 };
