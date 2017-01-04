@@ -25,4 +25,21 @@ module.exports = function (app) {
             }
         });
     });
+
+    app.get("/users/:page/:limit", function (req, res) {
+        var connection = app.repository.connectionFactory();
+        var userRepository = new app.repository.userRepository(connection);
+        var pagingConfig = {
+            page: req.params.page,
+            limit: req.params.limit
+        };
+
+        userRepository.list(pagingConfig, function(error, result) {
+            if (error) {
+                res.status(500).send(error);
+            } else {
+                res.status(201).json(result);
+            }
+        });
+    });
 };
