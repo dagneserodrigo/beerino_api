@@ -3,7 +3,7 @@ function beerinoRepository (connection) {
 }
 
 beerinoRepository.prototype.get = function(beerinoId, callback) {
-    this._connection.query('SELECT beerinoId, name, description, userId FROM beerino', callback);
+    this._connection.query('SELECT beerinoId, name, description, userId FROM beerino WHERE beerinoId = ?', beerinoId, callback);
 }
 
 beerinoRepository.prototype.save = function(beerino, callback) {
