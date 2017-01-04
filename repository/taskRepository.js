@@ -10,6 +10,10 @@ taskRepository.prototype.save = function(task, callback) {
     this._connection.query('INSERT INTO task SET ? ON DUPLICATE KEY UPDATE ?', [task, task], callback);
 };
 
+taskRepository.prototype.list = function(pagingConfig, callback) {
+    this._connection.query('SELECT taskId, temperature, beerId, userId FROM task LIMIT ?,?', [pagingConfig.page, pagingConfig.limit], callback);
+};
+
 module.exports = function() {
     return taskRepository;
 }
