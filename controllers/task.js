@@ -43,4 +43,17 @@ module.exports = function(app) {
         }
     });
   });
+
+  app.delete('tasks/:taskId', function(req, res) {
+    var connection = app.repository.connectionFactory();
+    var taskRepository = new app.repository.taskRepository(connection);
+
+    taskRepository.delete(req.params.taskId, function(error, result) {
+        if (error) {
+            res.status(500).send(error);
+        } else {
+            res.status(201).send(result);
+        }
+    });
+  });
 };
