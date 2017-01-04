@@ -3,7 +3,7 @@ function userRepository (oConnection) {
 }
 
 userRepository.prototype.get = function(userId, callback) {
-    this._connection.query('SELECT userId, name, email FROM user', callback);
+    this._connection.query('SELECT userId, name, email FROM user WHERE userId = ?', userId, callback);
 }
 
 userRepository.prototype.save = function(user, callback) {
