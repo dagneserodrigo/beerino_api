@@ -12,7 +12,7 @@ beerinoRepository.prototype.save = function(beerino, callback) {
 
 beerinoRepository.prototype.list = function(userId, callback) {
     //this._connection.query('SELECT beerinoId, name, description, userId FROM beerino LIMIT ?,?', [pagingConfig.page, pagingConfig.limit], callback);
-    this._connection.query('SELECT beerinoId, name, description, userId FROM beerino WHERE userId = ', userId, callback);
+    this._connection.query('SELECT beerinoId, name, description, userId FROM beerino WHERE userId = ?', userId, callback);
 }
 
 beerinoRepository.prototype.delete = function(beerinoId, callback) {

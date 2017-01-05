@@ -29,18 +29,37 @@ module.exports = function (app) {
         });
     });
 
-    app.post('/beerinos/:page/:limit', function(req, res) {
+    app.post('/beerinos', function(req, res) {
         var connection = app.repository.connectionFactory();
+        var userConnection = app.repository.connectionFactory();
         var beerinoRepository = new app.repository.beerinoRepository(connection);
+        var userRepository = new app.repository.userRepository(connection);
         var options = req.body;
+        var userNotFoundMessage = {mensagem: 'usuário não encontrado.'};
 
-        beerinoRepository.list(options.userId, function(error, result) {
+        userRepository.getByEmail(options.userEmail, function(error, userResult) {
             if (error) {
                 res.status(500).send(error);
-            } else {
-                res.status(201).json(result);
             }
-        });
+
+            if (!userResult.length) {
+                //alterar response state
+                res.status(500).json(userNotFoundMessage);
+            }
+
+            beerinoRepository.list(userResult[0].userId, function(error, beerinoResult) {
+                if (error) {
+                    res.status(500).send(error);
+                }
+                
+                if (!beerinoResult.length) {
+                    //alterar response state
+                    res.status(500).json(userNotFoundMessage);
+                }
+
+                res.status(201).json(beerinoResult);
+            });
+        })
     });
 
     app.delete('/beerino/:beerinoId', function(req, res) {
