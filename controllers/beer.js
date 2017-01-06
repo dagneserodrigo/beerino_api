@@ -17,7 +17,7 @@ module.exports = function(app) {
         var beerRepository = new app.repository.beerRepository(connection);
         var beer = req.body;
 
-        beerRepository.get(beer, function(error, result) {
+        beerRepository.save(beer, function(error, result) {
             if (error) {
                 res.status(500).send(error);
             } else {
@@ -40,8 +40,7 @@ module.exports = function(app) {
             }
 
             if (!userResult.length) {
-                //alterar response state
-                return res.status(500).json(userNotFoundMessage);
+                return res.status(404).json(userNotFoundMessage);
             }
 
             beerRepository.list(userResult[0].userId, function(error, beerResult) {
@@ -50,8 +49,7 @@ module.exports = function(app) {
                 }
                 
                 if (!beerResult.length) {
-                    //alterar response state
-                    return res.status(500).json(userNotFoundMessage);
+                    return res.status(404).json(userNotFoundMessage);
                 }
 
                 res.status(201).json(beerResult);

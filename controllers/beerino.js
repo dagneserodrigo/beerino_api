@@ -20,12 +20,22 @@ module.exports = function (app) {
         var beerinoRepository = new app.repository.beerinoRepository(connection);
         var beerino = req.body;
 
-        beerinoRepository.save(beerino, function (error, result) {
+        beerinoRepository.get(beerino.beerinoId, function(error, getResult) {
             if (error) {
-                res.status(500).send(error);
-            } else {
-                res.status(201).json(result);
+                return res.status(500).send(error);
             }
+
+            if (getResult.length) {
+                return res.status(404).json({mensagem: "Já existe um Beerino com essa identificação"});
+            }
+
+            beerinoRepository.save(beerino, function (error, saveResult) {
+                if (error) {
+                    return res.status(500).send(error);
+                }
+    
+                res.status(201).json(saveResult);
+            });
         });
     });
 
@@ -43,8 +53,7 @@ module.exports = function (app) {
             }
 
             if (!userResult.length) {
-                //alterar response state
-                return res.status(500).json(userNotFoundMessage);
+                return res.status(404).json(userNotFoundMessage);
             }
 
             beerinoRepository.list(userResult[0].userId, function(error, beerinoResult) {
@@ -53,8 +62,7 @@ module.exports = function (app) {
                 }
                 
                 if (!beerinoResult.length) {
-                    //alterar response state
-                    return res.status(500).json(userNotFoundMessage);
+                    return res.status(404).json(userNotFoundMessage);
                 }
 
                 res.status(201).json(beerinoResult);

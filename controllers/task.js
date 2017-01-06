@@ -18,7 +18,7 @@ module.exports = function(app) {
     var taskRepository = new app.repository.taskRepository(connection);
     var task = req.body;
 
-    taskRepository.get(task, function(error, result) {
+    taskRepository.save(task, function(error, result) {
         if (error) {
             res.status(500).send(error);
         } else {
@@ -41,8 +41,7 @@ module.exports = function(app) {
             }
 
             if (!userResult.length) {
-                //alterar response state
-                return res.status(500).json(userNotFoundMessage);
+                return res.status(404).json(userNotFoundMessage);
             }
 
             taskRepository.list(userResult[0].userId, function(error, taskResult) {
@@ -51,8 +50,7 @@ module.exports = function(app) {
                 }
                 
                 if (!taskResult.length) {
-                    //alterar response state
-                    return res.status(500).json(userNotFoundMessage);
+                    return res.status(404).json(userNotFoundMessage);
                 }
 
                 res.status(201).json(taskResult);
