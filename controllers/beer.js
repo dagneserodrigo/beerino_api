@@ -1,5 +1,5 @@
 module.exports = function(app) {
-    app.get('beer/:beerId', function(req, res) {
+    app.get('/beer/:beerId', function(req, res) {
         var connection = app.repository.connectionFactory();
         var beerRepository = new app.repository.beerRepository(connection);
 
@@ -12,7 +12,7 @@ module.exports = function(app) {
         });
     });
 
-    app.post('beer', function(req, res) {
+    app.post('/beer', function(req, res) {
         var connection = app.repository.connectionFactory();
         var beerRepository = new app.repository.beerRepository(connection);
         var beer = req.body;
@@ -26,24 +26,40 @@ module.exports = function(app) {
         });
     });
 
-    app.get('beers/:page/:limit', function(req, res) {
+    app.post('/beers', function(req, res) {
         var connection = app.repository.connectionFactory();
+        var userConnection = app.repository.connectionFactory();
         var beerRepository = new app.repository.beerRepository(connection);
-        var pagingConfig = {
-            page: req.params.page,
-            limite: req.params.limit
-        };
+        var userRepository = new app.repository.userRepository(connection);
+        var options = req.body;
+        var userNotFoundMessage = {mensagem: 'usuário não encontrado.'};
 
-        beerRepository.list(pagingConfig, function(error, result) {
+        userRepository.getByEmail(options.userEmail, function(error, userResult) {
             if (error) {
-                res.status(500).send(error);
-            } else {
-                res.status(201).send(result);
+                return res.status(500).send(error);
             }
-        });
+
+            if (!userResult.length) {
+                //alterar response state
+                return res.status(500).json(userNotFoundMessage);
+            }
+
+            beerRepository.list(userResult[0].userId, function(error, beerResult) {
+                if (error) {
+                    return res.status(500).send(error);
+                }
+                
+                if (!beerResult.length) {
+                    //alterar response state
+                    return res.status(500).json(userNotFoundMessage);
+                }
+
+                res.status(201).json(beerResult);
+            });
+        })
     });
 
-    app.delete('beer/:beerId', function(req, res) {
+    app.delete('/beer/:beerId', function(req, res) {
         var connection = app.repository.connectionFactory();
         var beerRepository = new app.repository.beerRepository(connection);
 

@@ -1,6 +1,6 @@
 module.exports = function(app) {
 
-  app.get('task/:taskId', function(req, res) {
+  app.get('/task/:taskId', function(req, res) {
     var connection = app.repository.connectionFactory();
     var taskRepository = new app.repository.taskRepository(connection);
 
@@ -13,7 +13,7 @@ module.exports = function(app) {
     });
   });
 
-  app.post('task', function(req, res) {
+  app.post('/task', function(req, res) {
     var connection = app.repository.connectionFactory();
     var taskRepository = new app.repository.taskRepository(connection);
     var task = req.body;
@@ -27,24 +27,40 @@ module.exports = function(app) {
     });
   });
 
-  app.get('tasks/:page/:limit', function(req, res) {
-    var connection = app.repository.connectionFactory();
-    var taskRepository = new app.repository.taskRepository(connection);
-    var pagingConfig = {
-      page: req.params.page,
-      limit: req.params.limit
-    };
+  app.post('/tasks', function(req, res) {
+        var connection = app.repository.connectionFactory();
+        var userConnection = app.repository.connectionFactory();
+        var taskRepository = new app.repository.taskRepository(connection);
+        var userRepository = new app.repository.userRepository(connection);
+        var options = req.body;
+        var userNotFoundMessage = {mensagem: 'usuário não encontrado.'};
 
-    taskRepository.list(pagingConfig, function(error, result) {
-        if (error) {
-            res.status(500).send(error);
-        } else {
-            res.status(201).send(result);
-        }
+        userRepository.getByEmail(options.userEmail, function(error, userResult) {
+            if (error) {
+                return res.status(500).send(error);
+            }
+
+            if (!userResult.length) {
+                //alterar response state
+                return res.status(500).json(userNotFoundMessage);
+            }
+
+            taskRepository.list(userResult[0].userId, function(error, taskResult) {
+                if (error) {
+                    return res.status(500).send(error);
+                }
+                
+                if (!taskResult.length) {
+                    //alterar response state
+                    return res.status(500).json(userNotFoundMessage);
+                }
+
+                res.status(201).json(taskResult);
+            });
+        })
     });
-  });
 
-  app.delete('tasks/:taskId', function(req, res) {
+  app.delete('/tasks/:taskId', function(req, res) {
     var connection = app.repository.connectionFactory();
     var taskRepository = new app.repository.taskRepository(connection);
 

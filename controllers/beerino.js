@@ -39,22 +39,22 @@ module.exports = function (app) {
 
         userRepository.getByEmail(options.userEmail, function(error, userResult) {
             if (error) {
-                res.status(500).send(error);
+                return res.status(500).send(error);
             }
 
             if (!userResult.length) {
                 //alterar response state
-                res.status(500).json(userNotFoundMessage);
+                return res.status(500).json(userNotFoundMessage);
             }
 
             beerinoRepository.list(userResult[0].userId, function(error, beerinoResult) {
                 if (error) {
-                    res.status(500).send(error);
+                    return res.status(500).send(error);
                 }
                 
                 if (!beerinoResult.length) {
                     //alterar response state
-                    res.status(500).json(userNotFoundMessage);
+                    return res.status(500).json(userNotFoundMessage);
                 }
 
                 res.status(201).json(beerinoResult);
