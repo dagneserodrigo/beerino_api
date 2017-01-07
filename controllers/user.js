@@ -7,7 +7,7 @@ module.exports = function (app) {
             if (error) {
                 res.status(500).send(error);
             } else {
-                res.status(201).json(result);
+                res.status(201).json(result.shift());
             }
         });
     });
