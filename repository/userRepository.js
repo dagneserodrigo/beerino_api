@@ -2,11 +2,7 @@ function userRepository (oConnection) {
     this._connection = oConnection;
 }
 
-userRepository.prototype.get = function(userId, callback) {
-    this._connection.query('SELECT userId, name, email FROM user WHERE userId = ?', userId, callback);
-}
-
-userRepository.prototype.getByEmail = function(userEmail, callback) {
+userRepository.prototype.get = function(userEmail, callback) {
     this._connection.query('SELECT userId, name, email FROM user WHERE email = ?', userEmail, callback);
 }
 

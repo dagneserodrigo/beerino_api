@@ -47,7 +47,7 @@ module.exports = function (app) {
         var options = req.body;
         var userNotFoundMessage = {mensagem: 'usuário não encontrado.'};
 
-        userRepository.getByEmail(options.userEmail, function(error, userResult) {
+        userRepository.get(options.userEmail, function(error, userResult) {
             if (error) {
                 return res.status(500).send(error);
             }

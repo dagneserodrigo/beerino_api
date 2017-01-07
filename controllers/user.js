@@ -1,9 +1,9 @@
 module.exports = function (app) {
-    app.get("/user/:userId", function (req, res) {
+    app.get("/user/:userEmail", function (req, res) {
         var connection = app.repository.connectionFactory();
         var userRepository = new app.repository.userRepository(connection);
-        
-        userRepository.get(req.params.userId, function(error, result) {
+
+        userRepository.get(req.params.userEmail, function(error, result) {
             if (error) {
                 res.status(500).send(error);
             } else {
