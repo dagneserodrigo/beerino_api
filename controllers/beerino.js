@@ -6,7 +6,7 @@ module.exports = function (app) {
         var connection = app.repository.connectionFactory();
         var beerinoRepository = new app.repository.beerinoRepository(connection);
         
-        req.check('beerinoId', 'Identificador do Beerino Inválido').notEmpty().isLength(32);
+        req.check('beerinoId', 'Identificador do Beerino Inválido').notEmpty().isLength(10);
 
         req.getValidationResult().then(function(errors) {
             if (errors.array().length) {
@@ -94,7 +94,7 @@ module.exports = function (app) {
     app.get('/beerino/generate/identifier', function(req, res) { 
         var connection = app.repository.connectionFactory();
         var beerinoRepository = new app.repository.beerinoRepository(connection);
-        var identifier = randomstring.generate();
+        var identifier = randomstring.generate(10);
 
         beerinoRepository.get(identifier, function(error, result) {
             if (error) {
@@ -103,7 +103,7 @@ module.exports = function (app) {
                 if (!!result.length) {
                     var duplicatedIdentifier = identifier;
                     while(identifier == duplicatedIdentifier) {
-                        identifier = randomstring.generate();
+                        identifier = randomstring.generate(10);
                     }
                 }
 
