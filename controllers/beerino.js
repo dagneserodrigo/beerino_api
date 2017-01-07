@@ -6,12 +6,20 @@ module.exports = function (app) {
         var connection = app.repository.connectionFactory();
         var beerinoRepository = new app.repository.beerinoRepository(connection);
         
-        beerinoRepository.get(req.params.beerinoId, function(error, result) {
-            if (error) {
-                res.status(500).send(error);
-            } else {
-                res.status(201).json(result.shift());
+        req.check('beerinoId', 'Identificador do Beerino Inválido').notEmpty().isLength(32);
+
+        req.getValidationResult().then(function(errors) {
+            if (errors.array().length) {
+                return res.status(400).send(app.errorResponse(errors.array()));
             }
+
+            beerinoRepository.get(req.params.beerinoId, function(error, result) {
+                if (error) {
+                    res.status(500).send(app.errorResponse(error));
+                } else {
+                    res.status(201).json(app.successResponse(result));
+                }
+            });
         });
     });
 
@@ -22,7 +30,7 @@ module.exports = function (app) {
 
         beerinoRepository.get(beerino.beerinoId, function(error, getResult) {
             if (error) {
-                return res.status(500).send(error);
+                return res.status(500).send(error); 
             }
 
             if (getResult.length) {
