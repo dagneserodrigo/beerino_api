@@ -31,26 +31,28 @@ module.exports = function(app) {
         var connection = app.repository.connectionFactory();
         var userConnection = app.repository.connectionFactory();
         var taskRepository = new app.repository.taskRepository(connection);
-        var userRepository = new app.repository.userRepository(connection);
+        var beerRepository = new app.repository.beerRepository(connection);
         var options = req.body;
-        var userNotFoundMessage = { message: 'usuário não encontrado.' };
+        var beerNotFoundMessage = { message: 'cerveja não encontrada.' };
+        var taskNotFoundMessage = { message: 'tarefa não encontrada.' };
 
-        userRepository.get(options.userEmail, function(error, userResult) {
+        beerRepository.get(options.beerId, function(error, beerResult) {
             if (error) {
                 return res.status(500).json(app.errorResponse(error));
             }
 
-            if (!userResult.length) {
-                return res.status(404).json(app.errorResponse(userNotFoundMessage));
+            if (!beerResult.length) {
+                return res.status(404).json(app.errorResponse(beerNotFoundMessage));
             }
-
-            taskRepository.list(userResult[0].userId, function(error, taskResult) {
+            taskRepository.list(beerResult[0].beerId, function(error, taskResult) {
+                console.log(error);
+                console.log(taskResult);
                 if (error) {
                     return res.status(500).json(app.errorResponse(error));
                 }
                 
                 if (!taskResult.length) {
-                    return res.status(404).json(app.errorResponse(userNotFoundMessage));
+                    return res.status(404).json(app.errorResponse(taskNotFoundMessage));
                 }
 
                 res.status(201).json(app.successResponse(taskResult));
