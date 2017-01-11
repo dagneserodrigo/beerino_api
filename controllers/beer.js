@@ -5,9 +5,9 @@ module.exports = function(app) {
 
         beerRepository.get(req.params.beerId, function(error, result) {
             if (error) {
-                res.status(500).send(app.errorResponse(error));
+                res.status(500).json(app.errorResponse(error));
             } else {
-                res.status(201).send(app.successResponse(result));
+                res.status(201).json(app.successResponse(result));
             }
         });
     });
@@ -19,13 +19,13 @@ module.exports = function(app) {
 
         beerRepository.save(beer, function(error, result) {
             if (error) {
-                res.status(500).send(app.errorResponse(error));
+                res.status(500).json(app.errorResponse(error));
             } else {
                 beerRepository.get(result.insertId, function(error, result) {
                     if (error) {
-                        res.status(500).send(app.errorResponse(error));
+                        res.status(500).json(app.errorResponse(error));
                     } else {
-                        res.status(201).send(app.successResponse(result));
+                        res.status(201).json(app.successResponse(result));
                     }
                 });
             }
@@ -38,11 +38,11 @@ module.exports = function(app) {
         var beerRepository = new app.repository.beerRepository(connection);
         var userRepository = new app.repository.userRepository(connection);
         var options = req.body;
-        var userNotFoundMessage = {mensagem: 'usuário não encontrado.'};
+        var userNotFoundMessage = { message: 'usuário não encontrado.' };
 
         userRepository.get(options.userEmail, function(error, userResult) {
             if (error) {
-                return res.status(500).send(app.errorResponse(error));
+                return res.status(500).json(app.errorResponse(error));
             }
 
             if (!userResult.length) {
@@ -51,7 +51,7 @@ module.exports = function(app) {
 
             beerRepository.list(userResult[0].userId, function(error, beerResult) {
                 if (error) {
-                    return res.status(500).send(app.errorResponse(error));
+                    return res.status(500).json(app.errorResponse(error));
                 }
                 
                 if (!beerResult.length) {
@@ -69,9 +69,9 @@ module.exports = function(app) {
 
         beerRepository.delete(req.params.beerId, function(error, result) {
             if (error) {
-                res.status(500).send(app.errorResponse(error));
+                res.status(500).json(app.errorResponse(error));
             } else {
-                res.status(201).send(app.successResponse(result));
+                res.status(201).json(app.successResponse(result));
             }
         });
     });

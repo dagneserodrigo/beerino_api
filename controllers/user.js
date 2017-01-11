@@ -5,9 +5,9 @@ module.exports = function (app) {
 
         userRepository.get(req.params.userEmail, function(error, result) {
             if (error) {
-                res.status(500).send(app.errorResponse(error));
+                res.status(500).json(app.errorResponse(error));
             } else {
-                res.status(201).send(app.successResponse(result));
+                res.status(201).json(app.successResponse(result));
             }
         });
     });
@@ -19,9 +19,9 @@ module.exports = function (app) {
 
         userRepository.save(user, function(error, result) {
             if (error) {
-                res.status(500).send(app.errorResponse(error));
+                res.status(500).json(app.errorResponse(error));
             } else {
-                res.status(201).send(app.successResponse(result));
+                res.status(201).json(app.successResponse(result));
             }
         });
     });
@@ -36,9 +36,9 @@ module.exports = function (app) {
 
         userRepository.list(pagingConfig, function(error, result) {
             if (error) {
-                res.status(500).send(app.errorResponse(error));
+                res.status(500).json(app.errorResponse(error));
             } else {
-                res.status(201).send(app.successResponse(result));
+                res.status(201).json(app.successResponse(result));
             }
         });
     });
@@ -49,9 +49,9 @@ module.exports = function (app) {
 
         userRepository.delete(req.params.userId, function(error, result) {
             if (error) {
-                res.status(500).send(app.errorResponse(error));
+                res.status(500).json(app.errorResponse(error));
             } else {
-                res.status(201).send(app.successResponse(result));
+                res.status(201).json(app.successResponse(result));
             }
         });
     });

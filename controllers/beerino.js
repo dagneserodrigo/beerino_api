@@ -10,12 +10,12 @@ module.exports = function (app) {
 
         req.getValidationResult().then(function(errors) {
             if (errors.array().length) {
-                return res.status(400).send(app.errorResponse(errors.array()));
+                return res.status(400).json(app.errorResponse(errors.array()));
             }
 
             beerinoRepository.get(req.params.beerinoId, function(error, result) {
                 if (error) {
-                    res.status(500).send(app.errorResponse(error));
+                    res.status(500).json(app.errorResponse(error));
                 } else {
                     res.status(201).json(app.successResponse(result));
                 }
@@ -30,25 +30,25 @@ module.exports = function (app) {
 
         beerinoRepository.get(beerino.beerinoId, function(error, getResult) {
             if (error) {
-                return res.status(500).send(app.errorResponse(error)); 
+                return res.status(500).json(app.errorResponse(error)); 
             }
 
             if (getResult.length) {
-                var errors = [{msg: "Já existe um Beerino com essa identificação"}];
+                var errors = { message: "Já existe um Beerino com essa identificação" };
                 return res.status(404).json(app.errorResponse(errors));
             }
 
             beerinoRepository.save(beerino, function (error, saveResult) {
                 if (error) {
-                    return res.status(500).send(app.errorResponse(error));
+                    return res.status(500).json(app.errorResponse(error));
                 }
 
                 beerinoRepository.get(beerino.beerinoId, function(error, result) {
                     if (error) {
-                        return res.status(500).send(app.errorResponse(error));
+                        return res.status(500).json(app.errorResponse(error));
                     }
 
-                    res.status(201).send(app.successResponse(result));
+                    res.status(201).json(app.successResponse(result));
                 });
             });
         });
@@ -60,27 +60,27 @@ module.exports = function (app) {
         var beerinoRepository = new app.repository.beerinoRepository(connection);
         var userRepository = new app.repository.userRepository(connection);
         var options = req.body;
-        var userNotFoundMessage = {mensagem: 'usuário não encontrado.'};
+        var userNotFoundMessage = { message: 'usuário não encontrado.' };
 
         userRepository.get(options.userEmail, function(error, userResult) {
             if (error) {
-                return res.status(500).send(app.errorResponse(error));
+                return res.status(500).json(app.errorResponse(error));
             }
 
             if (!userResult.length) {
-                return res.status(404).json(userNotFoundMessage);
+                return res.status(404).json(app.errorResponse(userNotFoundMessage));
             }
 
             beerinoRepository.list(userResult[0].userId, function(error, beerinoResult) {
                 if (error) {
-                    return res.status(500).send(app.errorResponse(error));
+                    return res.status(500).json(app.errorResponse(error));
                 }
                 
                 if (!beerinoResult.length) {
-                    return res.status(404).json(userNotFoundMessage);
+                    return res.status(404).json(app.errorResponse(userNotFoundMessage));
                 }
 
-                res.status(201).json(beerinoResult);
+                res.status(201).json(app.successResponse(beerinoResult));
             });
         })
     });
@@ -91,9 +91,9 @@ module.exports = function (app) {
         
         beerinoRepository.delete(req.params.beerinoId, function(error, result) {
             if (error) {
-                res.status(500).send(app.errorResponse(error));
+                res.status(500).json(app.errorResponse(error));
             } else {
-                res.status(201).json(result);
+                res.status(201).json(app.successResponse(result));
             }
         });
     });
@@ -105,7 +105,7 @@ module.exports = function (app) {
 
         beerinoRepository.get(identifier, function(error, result) {
             if (error) {
-                res.send(null);
+                res.json(null);
             } else {
                 if (!!result.length) {
                     var duplicatedIdentifier = identifier;
@@ -114,7 +114,7 @@ module.exports = function (app) {
                     }
                 }
 
-                res.send(identifier);
+                res.json(identifier);
             }
         });
     });
