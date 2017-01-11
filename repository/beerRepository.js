@@ -3,7 +3,7 @@ function beerRepository (connection) {
 }
 
 beerRepository.prototype.get = function (beerId, callback) {
-    this._connection.query("SELECT beerId, name, drescription, recipe, visible, userId FROM beer WHERE beerId = ?", beerId, callback);
+    this._connection.query("SELECT beerId, name, description, recipe, visible, userId FROM beer WHERE beerId = ?", beerId, callback);
 };
 
 beerRepository.prototype.save = function (beer, callback) {
@@ -12,7 +12,7 @@ beerRepository.prototype.save = function (beer, callback) {
 
 beerRepository.prototype.list = function (userId, callback) {
     // this._connection.query("SELECT beerId, name, drescription, recipe, public, userId FROM beer LIMIT ?,?", [pagingConfig.page, pagingConfig.limit], callback);
-    this._connection.query("SELECT beerId, name, drescription, recipe, visible, userId FROM beer WHERE userId = ? OR visible = 1", userId, callback);
+    this._connection.query("SELECT beerId, name, description, recipe, visible, userId FROM beer WHERE userId = ? OR visible = 1", userId, callback);
 };
 
 beerRepository.prototype.delete = function (beerId, callback) {

@@ -1,5 +1,6 @@
 module.exports = function(app) {
     app.errorResponse = function(errors) {
+        console.log(errors);
         return errors.map((error) => {
             return {
                 valid: false,
@@ -9,6 +10,7 @@ module.exports = function(app) {
     };
 
     app.successResponse = function(data) {
+        console.log(data);
         return data.map((result) => {
             return {
                 valid: true,

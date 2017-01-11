@@ -30,19 +30,26 @@ module.exports = function (app) {
 
         beerinoRepository.get(beerino.beerinoId, function(error, getResult) {
             if (error) {
-                return res.status(500).send(error); 
+                return res.status(500).send(app.errorResponse(error)); 
             }
 
             if (getResult.length) {
-                return res.status(404).json({mensagem: "Já existe um Beerino com essa identificação"});
+                var errors = [{msg: "Já existe um Beerino com essa identificação"}];
+                return res.status(404).json(app.errorResponse(errors));
             }
 
             beerinoRepository.save(beerino, function (error, saveResult) {
                 if (error) {
-                    return res.status(500).send(error);
+                    return res.status(500).send(app.errorResponse(error));
                 }
-    
-                res.status(201).json(saveResult);
+
+                beerinoRepository.get(beerino.beerinoId, function(error, result) {
+                    if (error) {
+                        return res.status(500).send(app.errorResponse(error));
+                    }
+
+                    res.status(201).send(app.successResponse(result));
+                });
             });
         });
     });
@@ -57,7 +64,7 @@ module.exports = function (app) {
 
         userRepository.get(options.userEmail, function(error, userResult) {
             if (error) {
-                return res.status(500).send(error);
+                return res.status(500).send(app.errorResponse(error));
             }
 
             if (!userResult.length) {
@@ -66,7 +73,7 @@ module.exports = function (app) {
 
             beerinoRepository.list(userResult[0].userId, function(error, beerinoResult) {
                 if (error) {
-                    return res.status(500).send(error);
+                    return res.status(500).send(app.errorResponse(error));
                 }
                 
                 if (!beerinoResult.length) {
@@ -84,7 +91,7 @@ module.exports = function (app) {
         
         beerinoRepository.delete(req.params.beerinoId, function(error, result) {
             if (error) {
-                res.status(500).send(error);
+                res.status(500).send(app.errorResponse(error));
             } else {
                 res.status(201).json(result);
             }
