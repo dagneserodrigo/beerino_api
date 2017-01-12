@@ -60,7 +60,7 @@ module.exports = function(app) {
         })
     });
 
-  app.delete('/tasks/:taskId', function(req, res) {
+  app.delete('/task/:taskId', function(req, res) {
     var connection = app.repository.connectionFactory();
     var taskRepository = new app.repository.taskRepository(connection);
 
@@ -70,6 +70,52 @@ module.exports = function(app) {
         } else {
             res.status(201).json(app.successResponse(result));
         }
+    });
+  });
+
+  app.post('/task/next', function(req, res) {
+    var connection = app.repository.connectionFactory();
+    var userConnection = app.repository.connectionFactory();
+    var taskRepository = new app.repository.taskRepository(connection);
+    var beerinoRepository = new app.repository.beerinoRepository(connection);
+    var options = req.body;
+
+    beerinoRepository.get(options.beerinoId, function(error, result) {
+        if (error) {
+            return res.status(500).json(app.errorResponse(error));
+        }
+
+        if (!result[0].currentTaskId) {
+            return res.status(500).json(app.errorResponse({ message: 'Este beerino não está executando nenhuma tarefa no momento.'}));    
+        }
+
+        taskRepository.get(result[0].currentTaskId, function(error, result) {
+            if (error) {
+                return res.status(500).json(app.errorResponse(error));
+            }
+           
+            if (!result[0].taskId) {
+                return res.status(500).json(app.errorResponse({ message: 'Não foi possível buscar a tarefa que o beerino está executando.'}));
+            }
+
+            var params = {
+                beerId: result[0].beerId,
+                nextTaskOrder: (result[0].order + 1)
+            }
+
+            taskRepository.getNext(params, function(error, result) {
+                console.log(result);
+                if (error) {
+                    return res.status(500).json(app.errorResponse(error));
+                }
+
+                if (!(result[0] || {}).taskId) {
+                    return res.status(500).json(app.successResponse({ message: 'end'}));
+                }
+
+                return res.status(201).json(app.successResponse(result));
+            });
+        });
     });
   });
 };

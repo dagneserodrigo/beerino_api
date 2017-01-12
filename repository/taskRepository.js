@@ -3,7 +3,12 @@ function taskRepository(connection) {
 };
 
 taskRepository.prototype.get = function(taskId, callback) {
-    this._connection.query('SELECT taskId, time, temperature, order, beerId FROM task WHERE taskId = ?', taskId, callback);
+    this._connection.query('SELECT taskId, time, temperature, `order`, beerId FROM task WHERE taskId = ?', taskId, callback);
+};
+
+taskRepository.prototype.getNext = function(params, callback) {
+    console.log(params);
+    this._connection.query('SELECT taskId, time, temperature, `order`, beerId FROM task WHERE beerId = ? AND `order` = ?', [params.beerId, params.nextTaskOrder], callback);
 };
 
 taskRepository.prototype.save = function(task, callback) {
