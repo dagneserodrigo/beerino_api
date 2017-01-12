@@ -15,10 +15,12 @@ module.exports = function (app) {
 
             beerinoRepository.get(req.params.beerinoId, function(error, result) {
                 if (error) {
-                    res.status(500).json(app.errorResponse(error));
-                } else {
-                    res.status(201).json(app.successResponse(result));
+                    return res.status(500).json(app.errorResponse(error));
                 }
+                
+                return res.status(404).json(app.errorResponse({message: 'Não está sendo possível achar seu berrino no momento, senhor.'}));
+
+                return res.status(201).json(app.successResponse(result));
             });
         });
     });

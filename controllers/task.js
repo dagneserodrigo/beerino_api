@@ -113,6 +113,9 @@ module.exports = function(app) {
                     return res.status(500).json(app.successResponse({ message: 'end'}));
                 }
 
+                result[0].minTemp = (result[0].temperature - 2);
+                result[0].maxTemp = (result[0].temperature + 2);
+
                 return res.status(201).json(app.successResponse(result));
             });
         });
