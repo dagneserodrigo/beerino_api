@@ -103,23 +103,20 @@ module.exports = function (app) {
     app.get('/beerino/generate/identifier', function(req, res) { 
         var connection = app.repository.connectionFactory();
         var beerinoRepository = new app.repository.beerinoRepository(connection);
-        var identifier = randomstring.generate(10);
 
-        beerinoRepository.get(identifier, function(error, result) {
-            if (error) {
-                res.send();
-            } else {
-                if (!!result.length) {
-                    var duplicatedIdentifier = identifier;
-                    while(identifier == duplicatedIdentifier) {
-                        identifier = randomstring.generate(10);
-                    }
-                }
-
-                res.send({identifier: identifier});
-            }
-        });
+        getBeerinoIdentifier(beerinoRepository, getBeerinoIdentifier, res);
     });
+
+    function getBeerinoIdentifier(beerinoRepository, callback, res) {
+        var identifier = randomstring.generate(10);
+        beerinoRepository.get(identifier, function(error, result) {
+            if (error || result.length) {
+                callback(beerinoRepository, getBeerinoIdentifier, res);
+            }
+
+            res.status(201).send(identifier);
+        });
+    }
 
     app.post('/beerino/temperature', function(req, res) {
         var connection = app.repository.connectionFactory();
@@ -128,7 +125,7 @@ module.exports = function (app) {
 
         beerinoRepository.updateTemperature(beerino, function(error, result) {
             if (error) {
-                res.status(500).json(app.errorResponse(error));
+                res.status(404).json(app.errorResponse(error));
             } else {
                 res.status(201).json(app.successResponse(result));
             }
