@@ -107,7 +107,7 @@ module.exports = function (app) {
 
         beerinoRepository.get(identifier, function(error, result) {
             if (error) {
-                res.json(null);
+                res.send();
             } else {
                 if (!!result.length) {
                     var duplicatedIdentifier = identifier;
@@ -116,7 +116,7 @@ module.exports = function (app) {
                     }
                 }
 
-                res.json(identifier);
+                res.send({identifier: identifier});
             }
         });
     });

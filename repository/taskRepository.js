@@ -6,6 +6,11 @@ taskRepository.prototype.get = function(taskId, callback) {
     this._connection.query('SELECT taskId, time, temperature, `order`, beerId FROM task WHERE taskId = ?', taskId, callback);
 };
 
+taskRepository.prototype.getByBeerId = function(beerId, callback) {
+    this._connection.query('SELECT  taskId, time, temperature, `order`, beerId FROM task WHERE beerId = ? ORDER BY `order` ASC LIMIT 1;', beerId, callback);
+};
+
+
 taskRepository.prototype.getNext = function(params, callback) {
     console.log(params);
     this._connection.query('SELECT taskId, time, temperature, `order`, beerId FROM task WHERE beerId = ? AND `order` = ?', [params.beerId, params.nextTaskOrder], callback);

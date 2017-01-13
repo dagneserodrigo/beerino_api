@@ -79,46 +79,114 @@ module.exports = function(app) {
     var taskRepository = new app.repository.taskRepository(connection);
     var beerinoRepository = new app.repository.beerinoRepository(connection);
     var options = req.body;
+    var beerino = undefined;
 
     beerinoRepository.get(options.beerinoId, function(error, result) {
         if (error) {
-            return res.status(500).json(app.errorResponse(error));
+            return res.status(400).json(app.errorResponse(error));
         }
 
-        if (!result[0].currentTaskId) {
-            return res.status(500).json(app.errorResponse({ message: 'Este beerino não está executando nenhuma tarefa no momento.'}));    
+        beerino = result[0];
+        console.log('pegou o beerino');
+        console.log(beerino);
+        if (!beerino.currentBeerId) {
+            return res.status(400).json(app.errorResponse({message: 'Beerino não possui nenhuma cerveja.'}));
         }
 
-        taskRepository.get(result[0].currentTaskId, function(error, result) {
-            if (error) {
-                return res.status(500).json(app.errorResponse(error));
-            }
-           
-            if (!result[0].taskId) {
-                return res.status(500).json(app.errorResponse({ message: 'Não foi possível buscar a tarefa que o beerino está executando.'}));
-            }
-
-            var params = {
-                beerId: result[0].beerId,
-                nextTaskOrder: (result[0].order + 1)
-            }
-
-            taskRepository.getNext(params, function(error, result) {
-                console.log(result);
+        if (!beerino.currentTaskId) {
+            console.log('beerino não tem task');
+            taskRepository.getByBeerId(beerino.currentBeerId, function(error, result) {
                 if (error) {
-                    return res.status(500).json(app.errorResponse(error));
+                    return res.status(400).json(app.errorResponse(error));
                 }
 
-                if (!(result[0] || {}).taskId) {
-                    return res.status(500).json(app.successResponse({ message: 'end'}));
-                }
+                beerino.currentTaskId = result[0].taskId;
+                console.log('pegou a task pelo id da cerveja');
+                console.log(result);
 
-                result[0].minTemp = (result[0].temperature - 2);
-                result[0].maxTemp = (result[0].temperature + 2);
+                var response = {
+                    beerinoId: beerino.beerinoId,
+                    order: result[0].order,
+                    beerId: result[0].beerId,
+                    time: result[0].time,
+                    minTemp: (result[0].temperature - 2),
+                    maxTemp: (result[0].temperature + 2)
+                };
 
-                return res.status(201).json(app.successResponse(result));
+                beerinoRepository.save(beerino, function(error, result) {
+                    if (error) {
+                        return res.status(400).json(app.errorResponse(error));
+                    }
+                    console.log('salvou o beerino atualizado');
+                    console.log(result);
+                    console.log('response: ');
+                    console.log(response);
+                    return res.status(200).json(app.successResponse(response));
+                });
             });
-        });
+        } else {
+            console.log('beerino tem current task');
+            console.log(result);
+            taskRepository.get(result[0].currentTaskId, function(error, result) {
+                if (error) {
+                    return res.status(400).json(app.errorResponse(error));
+                }
+            
+                if (!result[0].taskId) {
+                    return res.status(400).json(app.errorResponse({ message: 'Não foi possível buscar a tarefa que o beerino está executando.'}));
+                }
+                console.log('task atual');
+                console.log(result);
+                var params = {
+                    beerId: result[0].beerId,
+                    nextTaskOrder: (result[0].order + 1)
+                };
+
+                taskRepository.getNext(params, function(error, result) {
+                    if (error) {
+                        return res.status(400).json(app.errorResponse(error));
+                    }
+
+                    console.log('pegando a proxima task');
+                    console.log(result);
+
+                    if (!(result[0] || {}).taskId) {
+                        beerino.currentBeerId = null;
+                        beerino.currentTaskId = null;
+                        beerino.currentTemperature = null;
+                        beerinoRepository.save(beerino, function(error, result) {
+                            if (error) {
+                                return res.status(400).json(app.errorResponse(error));
+                            }
+
+                            return res.status(200).send('end');
+                        });
+                    } else {
+                        beerino.currentTaskId = result[0].taskId;
+
+                        var response = {
+                            beerinoId: beerino.beerinoId,
+                            order: result[0].order,
+                            beerId: result[0].beerId,
+                            time: result[0].time,
+                            minTemp: (result[0].temperature - 2),
+                            maxTemp: (result[0].temperature + 2)
+                        };
+                        console.log('BEERINO ATUALIZADO');
+                        console.log(beerino);
+                        console.log('response');
+                        console.log(response);
+                        beerinoRepository.save(beerino, function(error, result) {
+                            if (error) {
+                                return res.status(400).json(app.errorResponse(error));
+                            }
+
+                            return res.status(200).json(app.successResponse(response));
+                        });
+                    }
+                });
+            });
+        }
     });
   });
 };
