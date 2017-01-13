@@ -19,6 +19,10 @@ beerinoRepository.prototype.delete = function(beerinoId, callback) {
     this._connection.query('DELETE FROM beerino WHERE beerinoId = ?', beerinoId, callback);
 }
 
+beerinoRepository.prototype.updateTemperature = function(beerino, callback) {
+     this._connection.query('UPDATE beerino SET currentTemperature = ? WHERE beerinoId = ?', [beerino.actualTemperature, beerino.beerinoId], callback);
+}
+
 module.exports = function () {
     return beerinoRepository;
 };

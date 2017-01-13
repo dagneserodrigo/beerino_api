@@ -120,4 +120,18 @@ module.exports = function (app) {
             }
         });
     });
+
+    app.post('/beerino/temperature', function(req, res) {
+        var connection = app.repository.connectionFactory();
+        var beerinoRepository = new app.repository.beerinoRepository(connection);
+        var beerino = req.body;
+
+        beerinoRepository.updateTemperature(beerino, function(error, result) {
+            if (error) {
+                res.status(500).json(app.errorResponse(error));
+            } else {
+                res.status(201).json(app.successResponse(result));
+            }
+        });
+    });
 };

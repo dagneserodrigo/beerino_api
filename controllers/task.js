@@ -87,22 +87,18 @@ module.exports = function(app) {
         }
 
         beerino = result[0];
-        console.log('pegou o beerino');
-        console.log(beerino);
+
         if (!beerino.currentBeerId) {
             return res.status(400).json(app.errorResponse({message: 'Beerino não possui nenhuma cerveja.'}));
         }
 
         if (!beerino.currentTaskId) {
-            console.log('beerino não tem task');
             taskRepository.getByBeerId(beerino.currentBeerId, function(error, result) {
                 if (error) {
                     return res.status(400).json(app.errorResponse(error));
                 }
 
                 beerino.currentTaskId = result[0].taskId;
-                console.log('pegou a task pelo id da cerveja');
-                console.log(result);
 
                 var response = {
                     beerinoId: beerino.beerinoId,
@@ -117,16 +113,12 @@ module.exports = function(app) {
                     if (error) {
                         return res.status(400).json(app.errorResponse(error));
                     }
-                    console.log('salvou o beerino atualizado');
-                    console.log(result);
-                    console.log('response: ');
-                    console.log(response);
+
                     return res.status(200).json(app.successResponse(response));
                 });
             });
         } else {
-            console.log('beerino tem current task');
-            console.log(result);
+
             taskRepository.get(result[0].currentTaskId, function(error, result) {
                 if (error) {
                     return res.status(400).json(app.errorResponse(error));
@@ -135,8 +127,7 @@ module.exports = function(app) {
                 if (!result[0].taskId) {
                     return res.status(400).json(app.errorResponse({ message: 'Não foi possível buscar a tarefa que o beerino está executando.'}));
                 }
-                console.log('task atual');
-                console.log(result);
+
                 var params = {
                     beerId: result[0].beerId,
                     nextTaskOrder: (result[0].order + 1)
@@ -146,9 +137,6 @@ module.exports = function(app) {
                     if (error) {
                         return res.status(400).json(app.errorResponse(error));
                     }
-
-                    console.log('pegando a proxima task');
-                    console.log(result);
 
                     if (!(result[0] || {}).taskId) {
                         beerino.currentBeerId = null;
@@ -172,10 +160,7 @@ module.exports = function(app) {
                             minTemp: (result[0].temperature - 2),
                             maxTemp: (result[0].temperature + 2)
                         };
-                        console.log('BEERINO ATUALIZADO');
-                        console.log(beerino);
-                        console.log('response');
-                        console.log(response);
+
                         beerinoRepository.save(beerino, function(error, result) {
                             if (error) {
                                 return res.status(400).json(app.errorResponse(error));
